@@ -5,6 +5,7 @@
 //  Created by Samuel Beek on 21/06/15.
 //  Copyright (c) 2015 Samuel Beek. All rights reserved.
 //
+import UIKit
 
 @objc public enum RecordButtonState : Int {
     case recording, idle, hidden;
@@ -12,7 +13,7 @@
 
 @objc open class RecordButton : UIButton {
     
-    open var buttonColor: UIColor! = .blue{
+    open var buttonColor: UIColor! = .white{
         didSet {
             circleLayer.backgroundColor = buttonColor.cgColor
             circleBorder.borderColor = buttonColor.cgColor
@@ -56,20 +57,12 @@
         
         super.init(frame: frame)
         
-        self.addTarget(self, action: #selector(RecordButton.didTouchDown), for: .touchDown)
-        self.addTarget(self, action: #selector(RecordButton.didTouchUp), for: .touchUpInside)
-        self.addTarget(self, action: #selector(RecordButton.didTouchUp), for: .touchUpOutside)
-        
         self.drawButton()
         
     }
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
-        self.addTarget(self, action: #selector(RecordButton.didTouchDown), for: .touchDown)
-        self.addTarget(self, action: #selector(RecordButton.didTouchUp), for: .touchUpInside)
-        self.addTarget(self, action: #selector(RecordButton.didTouchUp), for: .touchUpOutside)
         
         self.drawButton()
     }
@@ -177,7 +170,7 @@
         gradientLayer.locations = [0.0, 1.0]
         let topColor = progressColor
         let bottomColor = progressColor
-        gradientLayer.colors = [topColor!.cgColor, bottomColor!.cgColor]
+        gradientLayer.colors = [topColor?.cgColor ?? progressColor.cgColor, bottomColor?.cgColor ?? progressColor.cgColor]
         return gradientLayer
     }
     
@@ -187,26 +180,6 @@
         circleBorder.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         circleBorder.position = CGPoint(x: self.bounds.midX,y: self.bounds.midY)
         super.layoutSubviews()
-    }
-    
-    
-    open func didTouchDown(){
-        self.buttonState = .recording
-    }
-    
-    open func didTouchUp() {
-        if(closeWhenFinished) {
-            self.setProgress(1)
-            
-            UIView.animate(withDuration: 0.3, animations: {
-                self.buttonState = .hidden
-                }, completion: { completion in
-                    self.setProgress(0)
-                    self.currentProgress = 0
-            })
-        } else {
-            self.buttonState = .idle
-        }
     }
     
     
